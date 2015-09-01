@@ -1,1 +1,5 @@
 src/semver
+test/.results
+test/.semver-module
+test/.version
+test/package.json

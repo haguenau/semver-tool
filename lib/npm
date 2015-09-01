@@ -1,0 +1,30 @@
+# user can overide this variable at runtime for a custom file
+PACKAGE_FILE=${PACKAGE_FILE:-package.json}
+
+function module-init {
+  if [ ! -e $PACKAGE_FILE ]; then
+    warning "initializing a npm module without $PACKAGE_FILE"
+  fi
+}
+
+function module-read {
+  local f=$PACKAGE_FILE
+  node <<EOF
+var fs = require('fs')
+var package = JSON.parse(fs.readFileSync('$f', 'utf8'));
+console.log(package.version);
+EOF
+}
+
+function module-write {
+  local v=$1
+  local f=$PACKAGE_FILE
+
+  (node > ${f}.tmp <<EOF
+var fs = require('fs')
+var package = JSON.parse(fs.readFileSync('$f', 'utf8'));
+package.version = '$1'
+console.log(JSON.stringify(package))
+EOF
+  ) && mv ${f}.tmp ${f} || rm -f ${f}.tmp
+}

@@ -15,6 +15,7 @@ clean:
 # TODO: find a test framework
 check: src/semver
 	cd test; ./module-version-file-test
+	cd test; ./module-npm-test
 
 install: src/semver
 	install -d $(bindir)

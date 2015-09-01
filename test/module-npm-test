@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -e
+
+source test-common.sh
+
+function clean {
+  rm -f package.json .results .semver-module
+}
+
+clean
+
+echo '{"name":"test", "version":"0.1.0"}' > package.json
+
+find-commands | \
+while read cmd; do
+  c=$cmd
+
+  if [ "$c" = "init" ]; then
+    LIBEXECDIR=$LIBEXECDIR $SEMVER $c -m npm >> .results
+  else
+    LIBEXECDIR=$LIBEXECDIR $SEMVER $c >> .results
+  fi
+
+done
+
+diff .results <(find-results)
