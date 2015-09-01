@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -e
+
+source test-common.sh
+
+function clean {
+  rm -f .version .results .semver-module
+}
+
+clean
+
+find-commands | \
+while read cmd; do
+  LIBEXECDIR=$LIBEXECDIR $SEMVER $cmd >> .results
+done
+
+diff .results <(find-results)

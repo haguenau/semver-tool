@@ -1,6 +1,14 @@
 # user can overide this variable at runtime for a custom file
 VERSION_FILE=${VERSION_FILE:-.version}
 
+function module-init {
+  if [ ! -e $VERSION_FILE ]; then
+    module-write $1
+  else
+    warn "version file $VERSION_FILE already exists"
+  fi
+}
+
 function module-read {
  while [ -w . ]; do
     if [ -e $VERSION_FILE ]; then
@@ -17,3 +25,4 @@ function module-read {
 function module-write {
   echo "$1" > $VERSION_FILE
 }
+

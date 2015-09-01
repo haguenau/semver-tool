@@ -11,12 +11,12 @@ DEFAULT_VERSION=${DEFAULT_VERSION:-0.1.0}
 
 MODULE_FILE=${MODULE_FILE:-.semver-module}
 
-LIBEXECDIR=@LIBEXECDIR@
+LIBEXECDIR=${LIBEXECDIR:-@LIBEXECDIR@}
 
 USAGE="\
 Usage:
   $PROG
-  $PROG init [--module=<module>] [<version>]
+  $PROG init [--module <module>] [<version>]
   $PROG bump [(major|minor|patch|prerel <prerel>|build <build>) | --force <version>] [--pretend]
   $PROG compare <version> [<oldversion>]
   $PROG --help
@@ -153,6 +153,9 @@ function command-init {
 
   if [ -e "$module_file" ]; then
     cp $module_file ${MODULE_FILE}
+    source-module
+    module-init $version
+    module-read
     exit 0
   fi
 
@@ -167,37 +170,43 @@ function command-bump {
   local patch=${split[2]}
   local prere=${split[3]}
   local build=${split[4]}
-  while [[ $# -gt 0 ]]; do
-    case "$1" in
-      major) new="$(($major + 1)).0.0"; shift ;;
-      minor) new="${major}.$(($minor + 1)).0"; shift ;;
-      patch) new="${major}.${minor}.$(($patch + 1))"; shift ;;
-      prerel)
-        if [[ $# -lt 2 ]]; then
-          usage-help
-        else
-          new=$(validate-version "${major}.${minor}.${patch}-${2}")
-          shift 2
-        fi ;;
-      build)
-        if [[ $# -lt 2 ]]; then
-          usage-help
-        else
-          new=$(validate-version "${major}.${minor}.${patch}${prere}+${2}")
-          shift 2
-        fi ;;
-      --force|-f)
-        if [[ $# -lt 2 ]]; then
-          usage-help
-        else
-          new=$(validate-version "$2")
-          shift 2
-        fi ;;
-      --pretend|-p) pretend=1; shift ;;
-      "") break;;
-      *) usage-help ;;
-    esac
-  done
+
+  # defaults to bump minor
+  if [ $# -eq 0 ]; then
+    new="${major}.$(($minor + 1)).0"
+  else
+    while [[ $# -gt 0 ]]; do
+      case "$1" in
+        major) new="$(($major + 1)).0.0"; shift ;;
+        minor) new="${major}.$(($minor + 1)).0"; shift ;;
+        patch) new="${major}.${minor}.$(($patch + 1))"; shift ;;
+        prerel)
+          if [[ $# -lt 2 ]]; then
+            usage-help
+          else
+            new=$(validate-version "${major}.${minor}.${patch}-${2}")
+            shift 2
+          fi ;;
+        build)
+          if [[ $# -lt 2 ]]; then
+            usage-help
+          else
+            new=$(validate-version "${major}.${minor}.${patch}${prere}+${2}")
+            shift 2
+          fi ;;
+        --force|-f)
+          if [[ $# -lt 2 ]]; then
+            usage-help
+          else
+            new=$(validate-version "$2")
+            shift 2
+          fi ;;
+        --pretend|-p) pretend=1; shift ;;
+        "") break;;
+        *) usage-help ;;
+      esac
+    done
+  fi
 
   echo $new
   if [[ "$pretend" -eq 0 ]]; then
@@ -228,6 +237,6 @@ case $1 in
   --version|-v) usage-version ;;
   init) shift; command-init $@;;
   bump) shift; source-module; command-bump $@;;
-  compare) shift; command-compare $@;;
+  compare) shift; source-module; command-compare $@;;
   *) echo "Unknown arguments: $@"; usage-help;;
 esac

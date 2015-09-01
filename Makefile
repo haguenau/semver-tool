@@ -7,13 +7,14 @@ all: src/semver
 
 src/semver: src/semver.in
 	sed -e 's#@LIBEXECDIR@#$(libexecdir)/semver#' $< > $@
+	chmod +x $@
 
 clean:
 	rm -f src/semver
 
 # TODO: find a test framework
 check: src/semver
-#	cd test; ./documentation-test
+	cd test; ./module-version-file-test
 
 install: src/semver
 	install -d $(bindir)
