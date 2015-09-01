@@ -1,0 +1,19 @@
+# user can overide this variable at runtime for a custom file
+VERSION_FILE=${VERSION_FILE:-.version}
+
+function module-read {
+ while [ -w . ]; do
+    if [ -e $VERSION_FILE ]; then
+      cat $VERSION_FILE
+      return 0
+    fi
+
+    pushd .. > /dev/null
+  done
+
+  error "version file $VERSION_FILE not found"
+}
+
+function module-write {
+  echo "$1" > $VERSION_FILE
+}
