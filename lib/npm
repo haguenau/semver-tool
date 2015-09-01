@@ -9,6 +9,11 @@ function module-init {
 
 function module-read {
   local f=$PACKAGE_FILE
+
+  if [ ! -e $f ]; then
+    error "package file $f not found"
+  fi
+
   node <<EOF
 var fs = require('fs')
 var package = JSON.parse(fs.readFileSync('$f', 'utf8'));
@@ -19,6 +24,10 @@ EOF
 function module-write {
   local v=$1
   local f=$PACKAGE_FILE
+
+  if [ ! -e $f ]; then
+    error "package file $f not found"
+  fi
 
   (node > ${f}.tmp <<EOF
 var fs = require('fs')
