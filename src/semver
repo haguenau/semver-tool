@@ -21,35 +21,36 @@ Usage:
   $PROG --version
 
 Arguments:
-  <version>  A version must match the following regex pattern:
-             \"${SEMVER_REGEX}\".
-             In english, the version must match X.Y.Z(-PRERELEASE)(+BUILD)
-             where X, Y and Z are positive integers, PRERELEASE is an optionnal
-             string composed of alphanumeric characters and hyphens and
-             BUILD is also an optional string composed of alphanumeric
-             characters and hyphens.
+  <version>      A version must match the following regex pattern:
+                 \"${SEMVER_REGEX}\".
+                 In plain English: the version must match
+                 X.Y.Z(-PRERELEASE)(+BUILD) where X, Y and Z are positive
+                 integers, and PRERELEASE and BUILD are optional strings
+                 of alphanumeric characters and hyphens.
 
-  <oldversion>  See <version> definition.
+  <oldversion>  See <version>.
 
-  <prerel>  String that must be composed of alphanumeric characters and hyphens.
+  <prerel>      String of alphanumeric characters and hyphens.
 
-  <build>   String that must be composed of alphanumeric characters and hyphens.
+  <build>       String of alphanumeric characters and hyphens.
 
 Options:
-  -u, --use=<version>    Use a specific version instead of taking the version from the file.
-  -f, --force=<version>  Forces a bump of any version without checking if it
-                         respects semver bumping rules.
-  -p, --pretend          Do not overwrite the project's version file, only
-                         output what the new version string would be.
-  -v, --version          Print the version of this tool.
-  -h, --help             Print this help message.
+  -u, --use=<version>     Use a specific version instead of taking the version
+                          from $VERSION_FILE
+
+  -f, --force=<version>   Forces bumping to any version without checking whether
+                          it respects semver bumping rules.
+  -p, --pretend           Do not overwrite the project's version file, only
+                          output what the new version string would be.
+  -v, --version           Print the version of this tool.
+  -h, --help              Print this help message.
 
 Commands:
-  init     initialize this project's version.
-  bump     this project's version by one of major, minor, patch, prerel, build
-           or a forced potentialy conflicting version.
-  compare  <version> to this project's version or to provided <oldversion>.
-  release  release the current version."
+  init      Initialize this project's version.
+  bump      Bump this project's version by one of major, minor, patch, prerel,
+            build or a forced, potentially conflicting version.
+  compare   Compare <version> to project's version or, if set, to <oldversion>.
+  release   Release the current version."
 
 
 function warning {
