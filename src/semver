@@ -54,11 +54,11 @@ Commands:
 
 
 function warning {
-  echo -e "$1" >&2
+  printf '%s\n' "$@" >&2
 }
 
 function error {
-  echo -e "$1" >&2
+  warning "$@"
   exit 1
 }
 
@@ -86,7 +86,8 @@ function validate-version {
       echo "$version"
     fi
   else
-    error "version $version does not match the semver scheme 'X.Y.Z(-PRERELEASE)(+BUILD)'. See help for more information."
+    error "Version \`$version' does not match the semver scheme" \
+          "'X.Y.Z(-PRERELEASE)(+BUILD). See help for more information."
   fi
 }
 
@@ -102,7 +103,8 @@ function get-version {
     pushd .. > /dev/null
   done
 
-  error "Version file $VERSION_FILE not found, you may want to initialize this project with 'version init'"
+  error "Version file \`$VERSION_FILE' not found. You may want to initialize" \
+        "this project with \`$PROG init'."
 }
 
 function compare-version {
@@ -148,7 +150,8 @@ function command-init {
   esac
 
   if [ -e "$VERSION_FILE" ]; then
-    error "version file $VERSION_FILE exists, cannot initialize project.  Either remove the current file or use 'version bump --force <newversion>'."
+    error "Version file \`$VERSION_FILE' already exists; cannot initialize" \
+          "project. Delete the file or use \`$PROG bump --force <newversion>'."
   fi
 
   echo "$version" | tee "$VERSION_FILE"
